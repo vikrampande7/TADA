@@ -19,11 +19,11 @@ if not os.path.exists(save_file_path):
      os.mkdir(save_file_path)
 
 '''
-Data contains two datasets 
+Data contains two datasets
 
 '''
 print('Loading data')
-with open('../data/TrainingsData.csv', 'r') as csv_file:
+with open('../data/TrainingsDataV2.csv', 'r') as csv_file:
     csv_reader = csv.reader(csv_file)
     data = []
     for i in csv_reader:
@@ -37,7 +37,7 @@ y = np.column_stack([y0, 1 - y0])
 
 '''
 Calculating 42 features
-Splitting into train, validation, and test set 
+Splitting into train, validation, and test set
 
 '''
 # Defines the sequence window size and steps (stride length). Changing these is as easy as changing their values.

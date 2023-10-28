@@ -5,6 +5,7 @@ Created on Thu May  4 10:44:10 2023
 @author: lisav
 """
 
+import os
 import csv
 from pickle import load
 from sklearn.decomposition import KernelPCA
@@ -21,7 +22,7 @@ plt.rcParams['figure.dpi'] = 600
 save_path_file = "../data/clustering/"
 if not os.path.exists(save_path_file):
      os.mkdir(save_path_file)
-        
+
 '''
 Load scaled features and select class 1
 
@@ -29,7 +30,7 @@ Load scaled features and select class 1
 print("Load features, AD class, and shap values")
 features = load(open('../data/features_OnlyPlants.pkl', 'rb'))
 
-with open('../data/TrainingsData.csv', 'r') as csv_file:
+with open('../data/TrainingsDataV2.csv', 'r') as csv_file:
     csv_reader = csv.reader(csv_file)
     data = []
     for i in csv_reader:
@@ -68,38 +69,38 @@ Perform PCA
 
 '''
 
-def clustering(features, shap_values, n_components = 10, FEATURES = 8, n_clusters = 6): 
-    
+def clustering(features, shap_values, n_components = 10, FEATURES = 8, n_clusters = 6):
+
     '''
     input: features as 3D array and SHAP values
     reduces the subsequence dimensions to 1 to output a 2D array
     concatenates features with SHAP values
     reduces the dimension to 10
     reduces the dimensions to 2 with t-SNE
-    
+
     output: 2D array for plotting
-    
+
     '''
-    
+
     features_flat = np.zeros((features.shape[0], 1, FEATURES))
     for i in range(FEATURES):
-        kpca = KernelPCA(n_components=1, random_state=2) 
-        kpca2 = kpca.fit_transform(features[:, :, i]) 
+        kpca = KernelPCA(n_components=1, random_state=2)
+        kpca2 = kpca.fit_transform(features[:, :, i])
         print(kpca.eigenvalues_)
         features_flat[:, :, i] = kpca2
-    
+
     features_flat = np.reshape(features_flat, [features.shape[0], FEATURES])
-    
+
     shap_values_flat = []
     for sequence in shap_values:
         shap_values_flat.append(np.sum(sequence, axis = 0))
     shap_values_flat = pd.DataFrame(shap_values_flat)
-    
+
     concat = np.concatenate((shap_values_flat, features_flat), axis = 1)
-    
-    pca = KernelPCA(n_components, random_state=2) 
+
+    pca = KernelPCA(n_components, random_state=2)
     concat_10 = pca.fit_transform(concat)
-    
+
     pcaInit = concat_10[:,:2] / np.std(concat_10[:,0]) * 0.0001
 
     tsne = openTSNE.TSNE(random_state = 42, initialization = pcaInit,
@@ -108,15 +109,15 @@ def clustering(features, shap_values, n_components = 10, FEATURES = 8, n_cluster
                          metric="cosine",
                          early_exaggeration = features.shape[0]/100)
     tsne_result = tsne.fit(concat_10)
-    
+
     kmeans = KMeans(n_clusters, init="random", n_init=10, random_state=1)
     label = kmeans.fit_predict(tsne_result)
-    
+
     return tsne_result, label
 
-def figure_tsne(tsne_result, label = None): 
+def figure_tsne(tsne_result, label = None):
     tsne_result_df = pd.DataFrame({'tsne_1': tsne_result[:,0], 'tsne_2': tsne_result[:,1]})
-    
+
     #pal = sns.color_palette('tab20')
     pal = ['#e377c2', '#ff7f0e', '#bcbd22', '#2ca02c', '#17becf', '#9467bd']
     fig, ax = plt.subplots(1)
@@ -124,13 +125,13 @@ def figure_tsne(tsne_result, label = None):
         sns.scatterplot(x='tsne_1', y='tsne_2', data=tsne_result_df, ax=ax,s=1.5)
     else:
         tsne_result_df = tsne_result_df.join(pd.DataFrame(data=label, columns = ['label']))
-        sns.scatterplot(x='tsne_1', y='tsne_2', hue='label', palette=pal, data=tsne_result_df, ax=ax,s=4) 
+        sns.scatterplot(x='tsne_1', y='tsne_2', hue='label', palette=pal, data=tsne_result_df, ax=ax,s=4)
     lim = (tsne_result.min()-5, tsne_result.max()+5)
     ax.set_xlim(lim)
     ax.set_ylim(lim)
     ax.set_aspect('equal')
     ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
-    
+
     return fig
 
 def elowplot(tsne_result):
@@ -157,7 +158,7 @@ def elowplot(tsne_result):
     plt.xlabel("Number of Clusters")
     plt.ylabel("SSE")
     plt.show()
-    
+
     return plt
 
 tsne_result, label = clustering(class1_features_sub, class1_shap_values_sub, FEATURES = 8, n_clusters = 6)

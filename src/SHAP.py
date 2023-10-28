@@ -22,8 +22,8 @@ Import data
 save_file_path = '../data/SHAP/'
 if not os.path.exists(save_file_path):
     os.mkdir(save_file_path)
-        
-with open('../data/TrainingsData.csv', 'r') as csv_file:
+
+with open('../data/TrainingsDataV2.csv', 'r') as csv_file:
     csv_reader = csv.reader(csv_file)
     data = []
     for i in csv_reader:
@@ -40,7 +40,7 @@ Extract true positive predictions
 
 class1_features, class1_idx = class1_extractions(ad_class, features)
 class1_features = scale_features(class1_features)
-    
+
 '''
 Load model
 '''
@@ -68,8 +68,8 @@ print(len(shap_values), len(shap_values[0]), len(shap_values[0][0]),len(shap_val
 FEATURES = 42
 #Calculate the sum of each feature across the 36 winows and all the class1 sequences
 feature_importance = [0 for i in range(FEATURES)] #empty list len=42
-for sequence in shap_values[0]: 
-    for window in sequence: 
+for sequence in shap_values[0]:
+    for window in sequence:
         for i in range(len(window)):
             feature_importance[i]+=abs(window[i])
 
@@ -78,7 +78,7 @@ data.to_csv(save_file_path + "feature-importance-average.csv")
 
 #Calculate the sum of each feature across the 36 winows -- keep sequences for variance
 feature_importance = []
-for sequence in shap_values[0]: 
+for sequence in shap_values[0]:
     feature_importance.append(np.sum(abs(sequence), axis = 0))
 
 data = pd.DataFrame(feature_importance)

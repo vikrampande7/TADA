@@ -20,11 +20,11 @@ if not os.path.exists(save_file_path):
      os.mkdir(save_file_path)
 
 '''
-Data contains four distinct datasets 
+Data contains four distinct datasets
 
 '''
 print('Loading data')
-with open('../data/TrainingsData.csv', 'r') as csv_file:
+with open('../data/TrainingsDataV2.csv', 'r') as csv_file:
     csv_reader = csv.reader(csv_file)
     data = []
     for i in csv_reader:
@@ -37,7 +37,7 @@ y0 = np.double(data[:, 4])
 y = np.column_stack([y0, 1 - y0])
 
 '''
-Splitting into train, and validation set 
+Splitting into train, and validation set
 
 '''
 # Save the features and activation scores

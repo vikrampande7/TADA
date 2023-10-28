@@ -4,6 +4,7 @@ Remove specific ARFs from existing
 """
 
 import pandas as pd
+import copy
 
 # Load two data files
 arf_loci = pd.read_csv("TADA\data\ARF Gene Loci.csv")
@@ -12,7 +13,12 @@ train_data = pd.read_csv('TADA\data\TrainingsData.csv')
 print(train_data.shape)
 
 # list of ARFs to be removed
-arfsRemove = arf_loci['Locus'].to_list()
+arfsRemove = arf_loci['Gene Name'].to_list()
+arfsRemove_copy = copy.deepcopy(arfsRemove)
+arfsRemove_copy.append('PPARF')
+
+print(f"L1: {len(arfsRemove)}")
+print(f"L2: {len(arfsRemove_copy)}")
 
 # Function to remove ARFs
 def remove_arfs(arfs_list, df):
@@ -25,12 +31,16 @@ def remove_arfs(arfs_list, df):
     """
     for i,value in enumerate(arfs_list):
         print(f"Deleting {i}:{value}")
-        df = df[~df['Name'].str.startswith(value)]
+        df = df[~df['Name'].str.contains(value)]
+    print("--Done--")
 
     return df
 
 # Updated Training Data
 updated_data = remove_arfs(arfsRemove, train_data)
+updated_data_ = remove_arfs(arfsRemove_copy, train_data)
 print(updated_data.shape)
+print(updated_data_.shape)
 
-updated_data.to_csv('TADA\data\TrainingsDataV2.csv')
+updated_data.to_csv('TADA\data\TrainingsDataV2_.csv')
+updated_data_.to_csv('TADA\data\TrainingsDataV2.csv')

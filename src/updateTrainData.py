@@ -42,5 +42,8 @@ updated_data_ = remove_arfs(arfsRemove_copy, train_data)
 print(updated_data.shape)
 print(updated_data_.shape)
 
+# Remove index column
+# updated_data_.drop(columns=updated_data_.columns[0], axis=1, inplace=True)
+
 updated_data.to_csv('TADA\data\TrainingsDataV2_.csv')
 updated_data_.to_csv('TADA\data\TrainingsDataV2.csv')

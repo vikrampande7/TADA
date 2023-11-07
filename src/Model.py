@@ -1,8 +1,8 @@
 import numpy as np
 import tensorflow as tf
 from keras.models import Sequential
-from keras.layers.core import Dense, Dropout
-from keras.layers import Conv1D, Bidirectional, LSTM, Layer
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.layers import Conv1D, Bidirectional, LSTM, Layer
 from tensorflow.keras import regularizers
 import keras.backend as K
 from keras.optimizers import Adam
